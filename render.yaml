@@ -1,0 +1,51 @@
+# Essais uniquement : PostgreSQL Free expire après 30 jours, disque web éphémère.
+services:
+  - type: web
+    name: restaurant-connect-bf-api
+    runtime: docker
+    plan: free
+    region: frankfurt
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod,render
+      - key: JAVA_TOOL_OPTIONS
+        value: -Xms64m -Xmx256m -XX:MaxMetaspaceSize=128m -XX:ReservedCodeCacheSize=32m -Xss512k -XX:+UseSerialGC
+      - key: RENDER_DB_HOST
+        fromDatabase:
+          name: restaurant-connect-bf-db
+          property: host
+      - key: RENDER_DB_NAME
+        fromDatabase:
+          name: restaurant-connect-bf-db
+          property: database
+      - key: POSTGRES_USER
+        fromDatabase:
+          name: restaurant-connect-bf-db
+          property: user
+      - key: POSTGRES_PASSWORD
+        fromDatabase:
+          name: restaurant-connect-bf-db
+          property: password
+      - key: BOOTSTRAP_ADMIN_EMAIL
+        sync: false
+      - key: BOOTSTRAP_ADMIN_PASSWORD
+        sync: false
+      - key: WHATSAPP_TOKEN_ENCRYPTION_KEY
+        generateValue: true
+      - key: WHATSAPP_WEBHOOK_VERIFY_TOKEN
+        generateValue: true
+      - key: CORS_ORIGIN
+        value: http://localhost:8787
+      - key: OPENAPI_ENABLED
+        value: "false"
+databases:
+  - name: restaurant-connect-bf-db
+    plan: free
+    region: frankfurt
+    postgresMajorVersion: "17"
+    databaseName: restaurant
+    user: restaurant
+    ipAllowList: []

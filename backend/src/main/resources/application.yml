@@ -1,0 +1,53 @@
+spring:
+  application:
+    name: restaurant-connect-bf
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/restaurant}
+    username: ${POSTGRES_USER:restaurant}
+    password: ${POSTGRES_PASSWORD}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+  flyway:
+    enabled: true
+    clean-disabled: true
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 6MB
+server:
+  error:
+    include-message: never
+    include-stacktrace: never
+  forward-headers-strategy: none
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never
+springdoc:
+  api-docs:
+    enabled: ${OPENAPI_ENABLED:false}
+  swagger-ui:
+    enabled: ${OPENAPI_ENABLED:false}
+app:
+  cors-origin: ${CORS_ORIGIN:https://restaurant.example.org}
+  media-dir: ${MEDIA_DIR:./data/media}
+  bootstrap-email: ${BOOTSTRAP_ADMIN_EMAIL:}
+  bootstrap-password: ${BOOTSTRAP_ADMIN_PASSWORD:}
+meta:
+  app-id: ${META_APP_ID:}
+  signup-config-id: ${META_EMBEDDED_SIGNUP_CONFIG_ID:}
+  encryption-key: ${WHATSAPP_TOKEN_ENCRYPTION_KEY:}
+  public-url: ${PUBLIC_API_URL:}
+  version: ${META_GRAPH_API_VERSION:}
+  phone-id: ${WHATSAPP_PHONE_NUMBER_ID:}
+  business-id: ${WHATSAPP_BUSINESS_ACCOUNT_ID:}
+  token: ${WHATSAPP_ACCESS_TOKEN:}
+  verify-token: ${WHATSAPP_WEBHOOK_VERIFY_TOKEN:}
+  app-secret: ${META_APP_SECRET:}
+  language: ${WHATSAPP_DEFAULT_LANGUAGE:fr}

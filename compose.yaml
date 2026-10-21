@@ -1,0 +1,55 @@
+services:
+  db:
+    image: postgres:17.11-alpine
+    environment:
+      POSTGRES_DB: restaurant
+      POSTGRES_USER: ${POSTGRES_USER:-restaurant}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Définir POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d restaurant"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+    networks: [internal]
+  api:
+    build: ./backend
+    env_file: .env
+    environment:
+      DATABASE_URL: jdbc:postgresql://db:5432/restaurant
+      MEDIA_DIR: /app/data/media
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:8080:8080"
+    volumes:
+      - media_data:/app/data
+    restart: unless-stopped
+    security_opt: ["no-new-privileges:true"]
+    networks: [internal, external]
+  proxy:
+    image: caddy:2.10.2-alpine
+    environment:
+      PUBLIC_HOST: ${PUBLIC_HOST:?Définir PUBLIC_HOST}
+      ACME_EMAIL: ${ACME_EMAIL:?Définir ACME_EMAIL}
+    ports: ["80:80", "443:443", "443:443/udp"]
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on: [api]
+    restart: unless-stopped
+    networks: [external]
+volumes:
+  postgres_data:
+  media_data:
+  caddy_data:
+  caddy_config:
+networks:
+  internal:
+    internal: true
+  external:
+

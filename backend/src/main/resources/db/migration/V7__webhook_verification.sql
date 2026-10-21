@@ -1,0 +1,5 @@
+CREATE TABLE whatsapp_webhook_verification (
+ id INTEGER PRIMARY KEY CHECK(id=1),
+ configuration_hash VARCHAR(64) NOT NULL,
+ verified_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+);

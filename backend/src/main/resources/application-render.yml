@@ -1,0 +1,17 @@
+# Render provides TLS and a public URL; database values come from the Blueprint.
+server:
+  port: ${PORT:8080}
+  tomcat:
+    threads:
+      max: 20
+      min-spare: 2
+spring:
+  datasource:
+    url: jdbc:postgresql://${RENDER_DB_HOST}:5432/${RENDER_DB_NAME:restaurant}
+    hikari:
+      maximum-pool-size: 3
+      minimum-idle: 1
+app:
+  media-dir: /app/data/media
+meta:
+  public-url: ${PUBLIC_API_URL:${RENDER_EXTERNAL_URL:}}
